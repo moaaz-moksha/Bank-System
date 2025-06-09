@@ -1,4 +1,4 @@
-﻿using Bank.Dtos;
+using Bank.Dtos;
 using Bank.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,16 +24,21 @@ namespace Bank.Controllers
             }
             return BadRequest();
         }
+       
         [HttpPut]
         public IActionResult Update(int id, BranchDtoUpdate dto)
         {
-            var res = _context.Update(id ,  dto );
-            if (res == true)
+            try
             {
-                return Ok(res);
+                _context.Update(id, dto);
+                return Ok("Branch updated successfully");
             }
-            return BadRequest();
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
+
 
         [HttpGet("GetAll")]
         public IActionResult GetAll()
