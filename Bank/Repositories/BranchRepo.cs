@@ -69,32 +69,32 @@ namespace Bank.Repositories
             return false;
         }
 
-        public bool Update(int id, BranchDtoUpdate dto)
-        {
-            var branch = _context.branch.Include(b => b.customers).FirstOrDefault(b => b.Id == id);
+       public void Update(int id, BranchDtoUpdate dto)
+{
+    var branch = _context.branch
+        .Include(b => b.customers)
+        .FirstOrDefault(b => b.Id == id);
 
-            if (branch == null)
-            {
-                return false;
-            }
-            branch.Name = dto.Name;
-            branch.Location = dto.Location;
+    if (branch == null)
+        throw new Exception("not found");
+  
+    branch.Name = dto.Name;
+    branch.Location = dto.Location;
 
-          
-            if (dto.CustomerIds != null && dto.CustomerIds.Any())
-            {
-               
-                var customers = _context.customer.Where(c => dto.CustomerIds.Contains(c.Id)).ToList();
+    if (dto.CustomerIds != null)
+    {
+        var customers = _context.customer
+            .Where(c => dto.CustomerIds.Contains(c.Id))
+            .ToList();
+        if (customers.Count != dto.CustomerIds.Count)
+            throw new Exception("not found");
 
-                branch.customers.Clear();
-                foreach (var customer in customers)
-                {
-                    branch.customers.Add(customer);
-                }
-            }
-            _context.SaveChanges();
-            return true;
-        }
+        branch.customers = customers;
+    }
+
+    _context.SaveChanges();
+    
+}
     }
 }
 
